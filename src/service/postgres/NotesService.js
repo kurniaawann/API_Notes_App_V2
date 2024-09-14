@@ -15,13 +15,14 @@ class NotesService {
     const updateAt = createdAt;
 
     const query = {
-      text: "INSERT INTO notes VALUES ($1, $2,$3,$4,$5,$6) RETURING id",
+      text: "INSERT INTO notes VALUES ($1, $2,$3,$4,$5,$6) RETURNING id",
       values: [id, title, body, tags, createdAt, updateAt],
     };
     const result = await this._Pool.query(query);
     if (!result.rows[0].id) {
       throw InvariantError("Catatan gagal ditambahkan");
     }
+    console.log(result.rows[0].id);
     return result.rows[0].id;
   }
 
