@@ -2,6 +2,7 @@ const Hapi = require("@hapi/hapi");
 const notes = require("./api/notes");
 const NotesService = require("./service/in-memory/notes-service");
 const NotesValidator = require("./validator/notes");
+const ClientError = require("./exceptions/ClientError");
 
 const init = async () => {
   const notesService = new NotesService();
@@ -21,6 +22,26 @@ const init = async () => {
       service: notesService,
       validator: NotesValidator,
     },
+  });
+  server.ext("onPreResponse", (request, h) => {
+    // mendapatkan konteks response dari request
+    const { response } = request;
+
+    // penanganan client error secara internal.
+    if (response instanceof ClientError) {
+      const newResponse = h.response({
+        status: "fail",
+        message: response.message,
+      });
+      newResponse.code(response.statusCode);
+      console.log(`ini response message${response.message}`);
+      // console.log(`ini h.continue${h.continue}`);
+      console.log(`ini request${response.statusCode}`);
+
+      return newResponse;
+    }
+
+    return h.continue;
   });
 
   await server.start();
