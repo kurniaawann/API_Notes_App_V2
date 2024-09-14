@@ -1,12 +1,12 @@
 const { nanoid } = require("nanoid");
-const { pool } = require("pg");
+const { Pool } = require("pg");
 const InvariantError = require("../../exceptions/InvariantError");
 const { mapDBToModel } = require("../../utils");
 const NotFoundError = require("../../exceptions/NotFoundError");
 
 class NotesService {
   constructor() {
-    this._pool = new pool();
+    this._Pool = new Pool();
   }
 
   async addNote({ title, body, tags }) {
@@ -15,10 +15,10 @@ class NotesService {
     const updateAt = createdAt;
 
     const query = {
-      text: "INSERT INTO notes VALUES ($1, $2,$3,$4,$5,$6,) RETURING id",
+      text: "INSERT INTO notes VALUES ($1, $2,$3,$4,$5,$6) RETURING id",
       values: [id, title, body, tags, createdAt, updateAt],
     };
-    const result = await this._pool.query(query);
+    const result = await this._Pool.query(query);
     if (!result.rows[0].id) {
       throw InvariantError("Catatan gagal ditambahkan");
     }
@@ -26,7 +26,7 @@ class NotesService {
   }
 
   async getNotes() {
-    const result = await this._pool.query("SELECT * FROM notes");
+    const result = await this._Pool.query("SELECT * FROM notes");
     return result.rows.map(mapDBToModel);
   }
 
@@ -35,7 +35,7 @@ class NotesService {
       text: "SELECT * FROM notes WHERE id = $1",
       values: [id],
     };
-    const result = await this._pool.query(query);
+    const result = await this._Pool.query(query);
     if (!result.rows.length) {
       throw new NotFoundError("Catatan tidak ditemukan");
     }
@@ -49,7 +49,7 @@ class NotesService {
       values: [title, body, tags, updatedAt, id],
     };
 
-    const result = await this._pool.query(query);
+    const result = await this._Pool.query(query);
     if (!result.rows.length) {
       throw new NotFoundError("Gagal memperbarui catatan. Id tidak ditemukan");
     }
@@ -61,7 +61,7 @@ class NotesService {
       values: [id],
     };
 
-    const result = await this._pool.query(query);
+    const result = await this._Pool.query(query);
     if (!result.rows.length) {
       throw new NotFoundError("Catatan gagal dihapus. Id tidak ditemukan");
     }
