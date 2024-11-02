@@ -58,7 +58,9 @@ class UsersService {
       text:'SELECT id,password FROM users WHERE username = $1',
       values:[username]
     }
-
+    
+    const result =  await this._Pool.query(query)
+    
     if (!result.rows.length) {
       throw new AuthenticationError('Kredensial yang anda berikan salah')
     }
