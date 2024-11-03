@@ -99,10 +99,6 @@ const init = async () => {
         message: response.message,
       });
       newResponse.code(response.statusCode);
-      console.log(`ini response message${response.message}`);
-      // console.log(`ini h.continue${h.continue}`);
-      console.log(`ini request${response.statusCode}`);
-
       return newResponse;
     }
 
