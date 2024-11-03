@@ -10,7 +10,6 @@ class UsersService {
     this._Pool = new Pool();
   }
 
-
   async addUser({ username, password, fullname }) {
     await this.verifyNewUsername(username);
     const id = `user-${nanoid()}`;
@@ -75,6 +74,15 @@ class UsersService {
       throw new AuthenticationError('Kredensial yang anda berikan salah')
     }
     return id
+  }
+
+  async getUsersByUsername(username) {
+    const query = {
+      text: 'SELECT id, username, fullname FROM users WHERE username LIKE $1',
+      values: [`%${username}%`]
+    }
+    const result = await this._pool.query(query);
+    return result.rows;
   }
 
 

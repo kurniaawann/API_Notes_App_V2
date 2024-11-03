@@ -13,15 +13,24 @@ const users = require('./api/users');
 const UsersService = require('./service/postgres/UsersService');
 const UsersValidator = require('./validator/users');
 
+//Authentication
 const authentications = require('./api/authentications');
 const AuthenticationsService = require('./service/postgres/AuthenticationService');
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
+//collaborations
+const collaborations = require('./api/collaborations');
+const collaborationsValidator = require('./validator/collaborations');
+const CollaborationsService = require("./service/postgres/CollaborationsService");
+
+
 const init = async () => {
+  const collaborationsService = new CollaborationsService();
   const notesService = new NotesService();
   const usersService = new UsersService();
-  const authenticationsService = new AuthenticationsService()
+  const authenticationsService = new AuthenticationsService();
+  
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -34,11 +43,9 @@ const init = async () => {
   });
   
   //register plugin eksternal
-
   await server.register([
     {
       plugin: Jwt,
-
     }
   ]);
 
@@ -83,6 +90,14 @@ const init = async () => {
         usersService,
         tokenManager: TokenManager,
         validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: collaborations,
+      options: {
+        collaborationsService,
+        notesService,
+        validator: collaborationsValidator,
       },
     },
   ]);
