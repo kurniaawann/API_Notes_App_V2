@@ -17,14 +17,13 @@ class NotesService {
     const updateAt = createdAt;
 
     const query = {
-      text: "INSERT INTO notes VALUES ($1, $2, $3, $4 ,$5 ,$6 $7,) RETURNING id",
+      text: "INSERT INTO notes VALUES ($1, $2, $3, $4 ,$5 ,$6, $7) RETURNING id",
       values: [id, title, body, tags, createdAt, updateAt, owner],
     };
     const result = await this._Pool.query(query);
     if (!result.rows[0].id) {
       throw InvariantError("Catatan gagal ditambahkan");
     }
-    console.log(result.rows[0].id);
     return result.rows[0].id;
   }
 
@@ -48,7 +47,7 @@ class NotesService {
       WHERE notes.id = $1`,
       values: [id],
     };
-    const result = await this._pool.query(query);
+    const result = await this._Pool.query(query);
    
     if (!result.rows.length) {
       throw new NotFoundError('Catatan tidak ditemukan');
@@ -87,7 +86,7 @@ class NotesService {
       text:'SELECT * FROM notes WHERE id = $1',
       values:[id]
     };
-    const result = await this._pool.query(query);
+    const result = await this._Pool.query(query);
 
     if (!result.rows.length) {
       throw new NotFoundError('Catatan tidak ditemukan');
@@ -111,11 +110,9 @@ class NotesService {
 
     // eslint-disable-next-line no-useless-catch
     try {
-      await this._collaborationService.verifyCollaborator(noteId,userId)
+      await this._collaborationService.verifyCollaborator(noteId, userId);
     } catch (error) {
-      
-        throw error
-      
+      throw error; // lemparkan error jika verifikasi gagal
     }
 
   }

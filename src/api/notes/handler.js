@@ -18,7 +18,7 @@ class NotesHandler {
       const { title = "untitled", body, tags } = request.payload;
       const {id: credentialId} = request.auth.credentials;
   
-      const noteId = await this._service.addNote({ title, body, tags, credentialId });
+      const noteId = await this._service.addNote({ title, body, tags, owner: credentialId });
   
       const response = h.response({
         status: "success",
@@ -135,7 +135,7 @@ class NotesHandler {
       try {
         const { id } = request.params;
         const { id: credentialId } = request.auth.credentials;
-        await this._service.verifyNoteOwner(id, credentialId);
+        await this._service.verifiyNoteOwner(id, credentialId);
         await this._service.deleteNoteById(id);
      
         return {
